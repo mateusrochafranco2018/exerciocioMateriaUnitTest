@@ -1,105 +1,86 @@
 class Phonebook:
-
     def __init__(self):
-        self.entries = {'POLICIA': '190'}
+        self.entries = {}
 
-    def add(self, name, number):
-        """
-
-        :param name: name of person in string
-        :param number: number of person in string
-        :return: 'Nome invalido' or 'Numero invalido' or 'Numero adicionado'
-        """
-        if '#' in name:
-            return 'Nome invalido'
-        if '@' in name:
-            return 'Nme invalido'
-        if '!' in name:
-            return 'Nome invalido'
-        if '$' in name:
-            return 'Nome invalio'
-        if '%' in name:
+    def adicionar_contato(self, nome_do_contato, numero_do_contato):
+        if self.nome_invalido(nome_do_contato):
             return 'Nome invalido'
 
-        if len(number) < 0:
-            return 'Numero invalid'
+        if len(numero_do_contato) == 0:
+            return 'Numero invalido'
 
-        if name not in self.entries:
-            self.entries[name] = number
+        if nome_do_contato in self.entries:
+            return 'Nome duplicado'
 
+        if any(value == numero_do_contato for value in self.entries.values()):
+            return 'Numero duplicado'
+
+        self.entries[nome_do_contato] = numero_do_contato
         return 'Numero adicionado'
 
-    def lookup(self, name):
-        """
-        :param name: name of person in string
-        :return: return number of person with name
-        """
-        if '#' in name:
-            return 'Nome invaldo'
-        if '@' in name:
+    def lookup(self, nome_do_contato):
+        if self.nome_invalido(nome_do_contato) or nome_do_contato not in self.entries:
             return 'Nome invalido'
-        if '!' in name:
-            return 'Nme invalido'
-        if '$' in name:
-            return 'Nome invalido'
-        if '%' in name:
-            return 'Nome nvalido'
+        return self.entries[nome_do_contato]
 
-        return self.entries[name]
+    def nome_invalido(self, nome_do_contato):
+        if len(nome_do_contato.strip()) == 0:  # Verifica se o nome está em branco
+            return True
 
-    def get_names(self):
-        """
+        invalid_characters = ['#', '@', '!', '$', '%']
+        for char in invalid_characters:
+            if char in nome_do_contato:
+                return True
+        return False
 
-        :return: return all names in phonebook
-        """
-        return self.entries.keys()
+    def get_nome_dos_contatos(self):
+        if self.is_empty():
+            return []
+        return list(self.entries.keys())
 
-    def get_numbers(self):
-        """
+    def get_numero_dos_contatos(self):
+        if self.is_empty():
+            return []
+        return list(self.entries.values())
 
-        :return: return all numbers in phonebook
-        """
-        return self.entries.values()
+    def is_empty(self):
+        return len(self.entries) == 0
 
     def clear(self):
-        """
-        Clear all phonebook
-        :return: return 'phonebook limpado'
-        """
         self.entries = {}
-        return 'phonebook limpado'
+        return 'Phonebook limpo'
 
-    def search(self, search_name):
-        """
-        Search all substring with search_name
-        :param search_name: string with name for search
-        :return: return list with results of search
-        """
+    def search(self, search_nome_do_contato):
         result = []
-        for name, number in self.entries.items():
-            if search_name not in name:
-                result.append({name, number})
+        for nome_do_contato, numero_do_contato in self.entries.items():
+            if search_nome_do_contato in nome_do_contato:
+                result.append({nome_do_contato: numero_do_contato})
         return result
 
     def get_phonebook_sorted(self):
-        """
-
-        :return: return phonebook in sorted order
-        """
-        return self.entries
+        if self.is_empty():
+            return {}
+        return dict(sorted(self.entries.items()))
 
     def get_phonebook_reverse(self):
-        """
+        if self.is_empty():
+            return {}
+        return dict(sorted(self.entries.items(), reverse=True))
 
-        :return: return phonebook in reverse sorted order
-        """
-        return self.entries
+    def delete(self, nome_do_contato):
+        if nome_do_contato in self.entries:
+            del self.entries[nome_do_contato]
+            return 'Contato excluido'
+        return 'Contato não encontrado'
 
-    def delete(self, name):
-        """
-        Delete person with name
-        :param name: String with name
-        :return: return 'Numero deletado'
-        """
-        self.entries.pop(name)
-        return 'Numero deletado'
+    def change_numero_do_contato(self, nome_do_contato, numero_do_contato):
+        if nome_do_contato in self.entries:
+            self.entries[nome_do_contato] = numero_do_contato
+            return 'Numero alterado'
+        return 'Contato não encontrado'
+
+    def get_nome_do_contato_by_numero_do_contato(self, numero_do_contato):
+        for nome_do_contato, num in self.entries.items():
+            if num == numero_do_contato:
+                return nome_do_contato
+        return 'Numero não encontrado'
